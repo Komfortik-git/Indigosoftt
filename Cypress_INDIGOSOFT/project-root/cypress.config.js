@@ -17,12 +17,20 @@ module.exports = defineConfig({
 
     // Скриншоты и видео
     screenshotOnRunFailure: true, // Сохранять скриншоты при падении тестов
-    video: true, // Включить запись видео тестов
+    
 
     // Обработка событий и дополнительные настройки
     setupNodeEvents(on, config) {
-      // Никакие глобальные объекты здесь использовать не нужно
+      // Подключаем обработчик событий Allure
+      require('@shelex/cypress-allure-plugin/writer')(on, config);
       return config;
+    },
+
+    // Настройки генерации отчётов Allure
+    resultsFolder: 'cypress/allure-results', // Папка для промежуточных результатов
+    afterRun: async () => {
+      // Генерируем итоговый отчёт Allure после выполнения тестов
+      await require('@shelex/cypress-allure-plugin/generator')({ currentDirectory: process.cwd(), quiet: true });
     },
   },
 });
